@@ -1,7 +1,9 @@
 <div align="center">
   <img width="350" alt="Zio logo" src="logo.svg" />
-  <br />
 </div>
+
+<hr>
+<br>
 
 **Zio** is a powerful HTTP client for [Zig](https://ziglang.org/), inspired by [Dio](https://pub.dev/packages/dio) (Dart). Supports global settings, interceptors, FormData, request aborting and timeouts, file uploading/downloading, custom adapters, and much more.
 
