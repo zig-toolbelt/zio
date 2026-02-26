@@ -2,6 +2,14 @@
   <img width="350" alt="Zio logo" src="logo.svg" />
 </div>
 
+<div align="center">
+
+[![Zig](https://img.shields.io/badge/Zig-%3E%3D0.15.2-blue?logo=zig&logoColor=white)](https://ziglang.org)
+[![Tests](https://img.shields.io/badge/build-passing-brightgreen)](zig%20build%20test)
+[![License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE)
+
+</div>
+
 <hr>
 <br>
 
@@ -13,11 +21,6 @@
 - `Response` with status and body.
 - Proper memory management (`init`/`deinit()`).
 
-Full development roadmap: [plan.md](plan.md)
-
-[![Zig](https://img.shields.io/badge/Zig-%3E%3D0.15.2-blue?logo=zig&logoColor=white)](https://ziglang.org)
-[![Tests](https://img.shields.io/badge/build-passing-brightgreen)](zig%20build%20test)
-[![License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE)
 
 ## Installation
 
