@@ -1,5 +1,5 @@
 <div align="center">
-  <img width="256" height="268" alt="Zio logo" src="logo.svg" />
+  <img width="350" alt="Zio logo" src="logo.svg" />
   <br />
 </div>
 
