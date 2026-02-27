@@ -48,12 +48,6 @@ const zio_dep = b.dependency("zio", .{});
 exe.root_module.addImport("zio", zio_dep.module("zio"));
 ```
 
-### Demo CLI
-```sh
-git clone https://github.com/etroynov/zio.git
-cd zio
-zig build run
-```
 
 ## Quick Start
 
