@@ -1,2 +1,2 @@
-pub const Client = @import("Client.zig");
-pub const Response = @import("Response.zig");
+pub const Client = @import("client.zig");
+pub const Response = @import("response.zig");
