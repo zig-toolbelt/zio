@@ -13,13 +13,13 @@
 <hr>
 <br>
 
-**Zio** is a powerful HTTP client for [Zig](https://ziglang.org/), inspired by [Dio](https://pub.dev/packages/dio) (Dart). Supports global settings, interceptors, FormData, request aborting and timeouts, file uploading/downloading, custom adapters, and much more.
+**Zio** is a minimal HTTP client library for [Zig](https://ziglang.org/), inspired by [Dio](https://pub.dev/packages/dio) (Dart). Built on top of `std.http.Client` with zero external dependencies.
 
-**Current Features:**
-- `Client` with `base_url` support for relative URLs.
-- GET requests using `std.http.Client`.
-- `Response` with status and body.
-- Proper memory management (`init`/`deinit()`).
+**Features:**
+- `Client` with `base_url` support for relative URL resolution.
+- Full HTTP method support: `GET`, `POST`, `PUT`, `PATCH`, `DELETE`, `HEAD`.
+- `Response` with `status` and `body`.
+- Proper memory management (`init` / `deinit(allocator)`).
 
 
 ## Installation
@@ -51,12 +51,12 @@ exe.root_module.addImport("zio", zio_dep.module("zio"));
 
 ## Quick Start
 
-```zigprj/zio/src/main.zig#L1-27
+```zig
 const std = @import("std");
 const zio = @import("zio");
 
 pub fn main() !void {
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+    var gpa: std.heap.GeneralPurposeAllocator(.{}) = .init;
     defer _ = gpa.deinit();
     const allocator = gpa.allocator();
 
@@ -68,83 +68,44 @@ pub fn main() !void {
     const response = try client.get("/get?a=1", .{});
     defer response.deinit(allocator);
 
-    std.debug.print("Status: {d}\n", .{ @enumToInt(response.status) });
-    std.debug.print("Body: {s}\n", .{ response.body });
+    std.debug.print("Status: {}\n", .{response.status});
+    std.debug.print("Body: {s}\n", .{response.body});
 }
 ```
 
-Compilation: `zig build-exe src/main.zig`
+Run with: `zig build run`
 
 ## API
 
-Import: `const zio = @import("zio");`
+```zig
+const zio = @import("zio");
+```
 
 ### Client
 
-```zigprj/zio/src/Client.zig#L4-67
-const std = @import("std");
-const Response = @import("Response.zig");
+```zig
+// Init
+var client = zio.Client.init(allocator, .{ .base_url = "https://api.example.com" });
+defer client.deinit();
 
-const Client = @This();
-
-allocator: std.mem.Allocator,
-http_client: std.http.Client,
-base_url: []const u8,
-
-pub const Options = struct {
-    base_url: []const u8 = "",
-};
-
-pub const GetOptions = struct {};
-
-pub fn init(allocator: std.mem.Allocator, options: Options) Client {
-    return .{
-        .allocator = allocator,
-        .http_client = .{ .allocator = allocator },
-        .base_url = options.base_url,
-    };
-}
-
-pub fn deinit(self: *Client) void {
-    self.http_client.deinit();
-}
-
-pub fn get(self: *Client, url: []const u8, options: GetOptions) !Response {
-    _ = options;
-
-    const full_url = if (std.mem.startsWith(u8, url, "http://") or std.mem.startsWith(u8, url, "https://"))
-        url
-    else
-        try std.fmt.allocPrint(self.allocator, "{s}{s}", .{ self.base_url, url });
-
-    defer if (full_url.ptr != url.ptr) self.allocator.free(full_url);
-
-    var aw: std.http.Writer.AllocatingWriter = .{ .writer = std.io.allocatorWriter(self.allocator), .allocator = self.allocator };
-    const result = try self.http_client.fetch(.{
-        .location = .{ .url = full_url },
-        .response_writer = aw.writer(),
-    });
-
-    return .{
-        .status = result.status,
-        .body = try aw.toOwnedSlice(),
-    };
-}
+// Methods
+const res = try client.get("/path", .{});
+const res = try client.post("/path", "body");
+const res = try client.put("/path", "body");
+const res = try client.patch("/path", "body");
+const res = try client.delete("/path");
+const res = try client.head("/path");
+defer res.deinit(allocator);
 ```
+
+`base_url` is optional. If `path` starts with `http://` or `https://`, it is used as-is.
 
 ### Response
 
-```zigprj/zio/src/Response.zig#L3-12
-const std = @import("std");
-
-const Response = @This();
-
-status: std.http.Status,
-body: []const u8,
-
-pub fn deinit(self: Response, allocator: std.mem.Allocator) void {
-    allocator.free(self.body);
-}
+```zig
+res.status  // std.http.Status
+res.body    // []const u8
+res.deinit(allocator)
 ```
 
 ## Contributing
@@ -157,8 +118,6 @@ Contributions are welcome! Please:
 4. Push to branch (`git push origin feature/foo`).
 5. Create Pull Request.
 
-See `plan.md` for planned features.
-
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file (create one with MIT template).
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file.
