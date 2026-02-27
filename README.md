@@ -24,29 +24,35 @@
 
 ## Installation
 
-### As a Library (Module)
-1. Add dependency to your `build.zig.zon`:
+1. Run `zig fetch` to add the dependency:
+
+```sh
+zig fetch --save https://github.com/etroynov/zio/archive/refs/tags/0.1.0.tar.gz
+```
+
+This will automatically add the entry to your `build.zig.zon`:
 
 ```zon
-.zio = .{
-    .url = "https://github.com/your-username/zio/archive/main.tar.gz",
-    .hash = "zig fetch --save https://...",  // compute automatically
-};
+.dependencies = .{
+    .zio = .{
+        .url = "https://github.com/etroynov/zio/archive/refs/tags/0.1.0.tar.gz",
+        .hash = "<computed by zig fetch>",
+    },
+},
 ```
 
 2. In `build.zig` import the module:
 
 ```zig
-/dev/null/build.zig#Lexample
 const zio_dep = b.dependency("zio", .{});
 exe.root_module.addImport("zio", zio_dep.module("zio"));
 ```
 
 ### Demo CLI
 ```sh
-git clone https://github.com/your/zio.git
+git clone https://github.com/etroynov/zio.git
 cd zio
-zig build run  # runs src/main.zig
+zig build run
 ```
 
 ## Quick Start
