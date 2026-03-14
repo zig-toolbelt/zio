@@ -44,7 +44,10 @@ This will automatically add the entry to your `build.zig.zon`:
 2. In `build.zig` import the module:
 
 ```zig
-const zio_dep = b.dependency("zio", .{});
+const zio_dep = b.dependency("zio", .{
+    .target = target,
+    .optimize = optimize,
+});
 exe.root_module.addImport("zio", zio_dep.module("zio"));
 ```
 
