@@ -30,17 +30,6 @@
 zig fetch --save https://github.com/etroynov/zio/archive/refs/tags/0.1.0.tar.gz
 ```
 
-This will automatically add the entry to your `build.zig.zon`:
-
-```zon
-.dependencies = .{
-    .zio = .{
-        .url = "https://github.com/etroynov/zio/archive/refs/tags/0.1.0.tar.gz",
-        .hash = "<computed by zig fetch>",
-    },
-},
-```
-
 2. In `build.zig` import the module:
 
 ```zig
