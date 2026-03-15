@@ -18,7 +18,8 @@
 **Features:**
 - `Client` with `base_url` support for relative URL resolution.
 - Full HTTP method support: `GET`, `POST`, `PUT`, `PATCH`, `DELETE`, `HEAD`.
-- `Response` with `status` and `body`.
+- Custom **request headers** via `RequestOptions`.
+- `Response` with `status`, `body`, and **response headers** (`getHeader(name)`).
 - Proper memory management (`init` / `deinit(allocator)`).
 
 
@@ -27,7 +28,7 @@
 1. Run `zig fetch` to add the dependency:
 
 ```sh
-zig fetch --save https://github.com/etroynov/zio/archive/refs/tags/0.1.0.tar.gz
+zig fetch --save https://github.com/etroynov/zio/archive/refs/tags/0.2.0.tar.gz
 ```
 
 2. In `build.zig` import the module:
@@ -57,11 +58,16 @@ pub fn main() !void {
     });
     defer client.deinit();
 
-    const response = try client.get("/get?a=1", .{});
+    const response = try client.get("/get?a=1", .{
+        .headers = &.{
+            .{ .name = "Accept", .value = "application/json" },
+        },
+    });
     defer response.deinit(allocator);
 
     std.debug.print("Status: {}\n", .{response.status});
     std.debug.print("Body: {s}\n", .{response.body});
+    std.debug.print("Content-Type: {s}\n", .{response.getHeader("Content-Type") orelse "n/a"});
 }
 ```
 
@@ -82,12 +88,20 @@ defer client.deinit();
 
 // Methods
 const res = try client.get("/path", .{});
-const res = try client.post("/path", "body");
-const res = try client.put("/path", "body");
-const res = try client.patch("/path", "body");
-const res = try client.delete("/path");
-const res = try client.head("/path");
+const res = try client.post("/path", "body", .{});
+const res = try client.put("/path", "body", .{});
+const res = try client.patch("/path", "body", .{});
+const res = try client.delete("/path", .{});
+const res = try client.head("/path", .{});
 defer res.deinit(allocator);
+
+// With request headers
+const res = try client.get("/path", .{
+    .headers = &.{
+        .{ .name = "Authorization", .value = "Bearer token" },
+        .{ .name = "Accept", .value = "application/json" },
+    },
+});
 ```
 
 `base_url` is optional. If `path` starts with `http://` or `https://`, it is used as-is.
@@ -95,8 +109,10 @@ defer res.deinit(allocator);
 ### Response
 
 ```zig
-res.status  // std.http.Status
-res.body    // []const u8
+res.status                        // std.http.Status
+res.body                          // []const u8
+res.headers                       // []const std.http.Header
+res.getHeader("Content-Type")     // ?[]const u8 — case-insensitive lookup
 res.deinit(allocator)
 ```
 
