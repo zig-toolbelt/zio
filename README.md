@@ -28,7 +28,7 @@
 1. Run `zig fetch` to add the dependency:
 
 ```sh
-zig fetch --save https://github.com/etroynov/zio/archive/refs/tags/0.2.0.tar.gz
+zig fetch --save https://github.com/etroynov/zio/archive/refs/tags/0.2.1.tar.gz
 ```
 
 2. In `build.zig` import the module:
