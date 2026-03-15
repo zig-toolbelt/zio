@@ -1,5 +1,5 @@
 const std = @import("std");
-const Response = @import("Response.zig");
+const Response = @import("response.zig");
 
 const Client = @This();
 
